@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CLens • Tải ảnh</title>
+    <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238b5cf6'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5-5-5 5h3v4h4v-4h3z'/%3E%3C/svg%3E" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #09090b; --primary: #8b5cf6; --secondary: #ec4899; --glass: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        img { -webkit-user-drag: none; pointer-events: none; }
+        .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-color: var(--bg); background-image: radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.15) 0px, transparent 50%), radial-gradient(at 90% 10%, rgba(236, 72, 153, 0.15) 0px, transparent 50%), radial-gradient(at 50% 90%, rgba(59, 130, 246, 0.15) 0px, transparent 50%); animation: breath 10s ease-in-out infinite alternate; }
+        @keyframes breath { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        .app-widget { background: var(--glass); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid var(--border); border-radius: 32px; padding: 40px 30px; width: 100%; max-width: 420px; box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; position: relative; }
+        .logo-wrap { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 18px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
+        .logo-wrap svg { width: 28px; height: 28px; fill: #fff; }
+        h1 { font-size: 26px; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px;}
+        p.sub { color: #a1a1aa; font-size: 14px; margin-bottom: 30px; }
+        .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+        .bento-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 24px; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bento-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-4px); }
+        .bento-item svg { width: 32px; height: 32px; stroke: #fff; stroke-width: 1.5; fill: none; opacity: 0.8; }
+        .bento-item span { font-weight: 500; font-size: 14px; color: #e4e4e7; }
+        input[type="file"] { display: none; }
+        .preview-box { width: 100%; border-radius: 20px; overflow: hidden; display: none; position: relative; background: #000; border: 1px solid var(--border); }
+        .preview-box img { width: 100%; max-height: 350px; object-fit: contain; display: block; }
+        .status-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10; }
+        .loader { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .actions { display: none; gap: 12px; width: 100%; margin-top: 20px; }
+        .btn { flex: 1; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 15px; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-cancel { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); }
+        .btn-submit { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .result-card { display: none; width: 100%; margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border); animation: slideUp 0.4s ease; text-align: left;}
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .r-label { font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+        .r-value { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 15px; }
+        .copy-btn { background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #c4b5fd; padding: 12px; border-radius: 12px; font-size: 13px; word-break: break-all; cursor: pointer; display: block; transition: 0.2s; text-decoration: none; line-height: 1.4; }
+        .copy-btn:hover { background: rgba(139, 92, 246, 0.25); }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px); background: #18181b; border: 1px solid var(--border); padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 500; transition: 0.4s; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast.show { transform: translate(-50%, 0); }
+    </style>
+</head>
+<body>
+    <div class="mesh-bg"></div>
+    <div class="app-widget" id="mainWidget">
+        <div id="initView" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="logo-wrap">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5-5-5 5h3v4h4v-4h3z"/></svg>
+            </div>
+            <h1>CLens</h1>
+            <p class="sub">Kho ảnh cá nhân</p>
+            <div class="bento-grid">
+                <div class="bento-item" onclick="document.getElementById('fileCamera').click()">
+                    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <span>Máy ảnh</span>
+                </div>
+                <div class="bento-item" onclick="document.getElementById('fileGallery').click()">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>Từ thiết bị</span>
+                </div>
+            </div>
+            <input type="file" id="fileCamera" accept="image/*" capture="environment">
+            <input type="file" id="fileGallery" accept="image/*">
+        </div>
+        <div class="preview-box" id="previewBox">
+            <img id="imagePreview" src="">
+            <div class="status-overlay" id="statusOverlay">
+                <div class="loader"></div>
+                <span style="font-size: 13px; font-weight: 500;">Đang xử lý...</span>
+            </div>
+        </div>
+        <div class="actions" id="actionGrp">
+            <button class="btn btn-cancel" id="btnCancel">Hủy</button>
+            <button class="btn btn-submit" id="btnSubmit">Lưu lên mây</button>
+        </div>
+        <div class="result-card" id="resultCard">
+            <span class="r-label">Mã ID Ảnh</span>
+            <div class="r-value" id="resId">...</div>
+            <span class="r-label">Liên kết chia sẻ (Nhấn copy)</span>
+            <a class="copy-btn" id="resLink">...</a>
+            <button class="btn btn-cancel" style="width: 100%; margin-top: 15px;" onclick="location.reload()">Tải ảnh khác</button>
+        </div>
+    </div>
+    <div class="toast" id="toast">Thông báo</div>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key)) e.preventDefault(); if(e.key==='F12') e.preventDefault(); });
+
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7QlHVDoWr7aQJMzLrfMWaCukXkFisq3A1BdLhyqcbdnPq2JvsJ0xgmkXrCbYBAKMtRQ/exec';
+        let file = null;
+
+        const showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); }
+
+        const compress = (f, cb) => {
+            const r = new FileReader(); r.readAsDataURL(f);
+            r.onload = e => {
+                const i = new Image(); i.src = e.target.result;
+                i.onload = () => {
+                    const c = document.createElement('canvas');
+                    let w = i.width, h = i.height;
+                    if (w>h && w>1600){h*=1600/w;w=1600;} else if(h>1600){w*=1600/h;h=1600;}
+                    c.width=w; c.height=h;
+                    const ctx = c.getContext('2d');
+                    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,w,h);
+                    ctx.drawImage(i,0,0,w,h);
+                    cb(c.toDataURL('image/jpeg', 0.7));
+                }
+            }
+        }
+
+        const handleSelect = (e) => {
+            if(e.target.files[0]) {
+                file = e.target.files[0];
+                const r = new FileReader();
+                r.onload = ev => {
+                    document.getElementById('imagePreview').src = ev.target.result;
+                    document.getElementById('initView').style.display = 'none';
+                    document.getElementById('previewBox').style.display = 'block';
+                    document.getElementById('actionGrp').style.display = 'flex';
+                }
+                r.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('fileCamera').addEventListener('change', handleSelect);
+        document.getElementById('fileGallery').addEventListener('change', handleSelect);
+
+        document.getElementById('btnCancel').onclick = () => location.reload();
+
+        document.getElementById('btnSubmit').onclick = () => {
+            if(!file) return;
+            document.getElementById('actionGrp').style.display = 'none';
+            document.getElementById('statusOverlay').style.display = 'flex';
+            compress(file, (b64) => {
+                fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({fileName: file.name, mimeType: 'image/jpeg', base64: b64}) })
+                .then(r=>r.json()).then(d => {
+                    document.getElementById('statusOverlay').style.display = 'none';
+                    if(d.status==="success"){
+                        showToast('Lưu thành công!');
+                        document.getElementById('resId').innerText = d.id;
+                        const p = window.location.pathname.split('/'); p.pop();
+                        const link = window.location.origin + p.join('/') + "/view?id=" + d.id;
+                        document.getElementById('resLink').innerText = link;
+                        document.getElementById('resLink').href = link;
+                        document.getElementById('resultCard').style.display = 'block';
+                    } else { showToast('Lỗi: '+d.message); document.getElementById('btnCancel').click(); }
+                }).catch(()=>{ showToast('Lỗi mạng!'); document.getElementById('btnCancel').click(); });
+            });
+        }
+
+        document.getElementById('resLink').onclick = (e) => { e.preventDefault(); navigator.clipboard.writeText(e.target.href).then(()=>showToast('Đã copy link!')); }
+    </script>
+</body>
+</html>

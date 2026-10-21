@@ -91,7 +91,9 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key)) e.preventDefault(); if(e.key==='F12') e.preventDefault(); });
 
+        // >>> DÁN LINK WEB APP CỦA BẠN VÀO ĐÂY (Chỉ cần dán link kết thúc bằng /exec) <<<
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7QlHVDoWr7aQJMzLrfMWaCukXkFisq3A1BdLhyqcbdnPq2JvsJ0xgmkXrCbYBAKMtRQ/exec';
+        
         let file = null;
 
         const showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); }
@@ -129,7 +131,6 @@
 
         document.getElementById('fileCamera').addEventListener('change', handleSelect);
         document.getElementById('fileGallery').addEventListener('change', handleSelect);
-
         document.getElementById('btnCancel').onclick = () => location.reload();
 
         document.getElementById('btnSubmit').onclick = () => {
@@ -144,7 +145,7 @@
                         showToast('Lưu thành công!');
                         document.getElementById('resId').innerText = d.id;
                         const p = window.location.pathname.split('/'); p.pop();
-                        const link = window.location.origin + p.join('/') + "/view?id=" + d.id;
+                        const link = window.location.origin + p.join('/') + "/view.html?id=" + d.id;
                         document.getElementById('resLink').innerText = link;
                         document.getElementById('resLink').href = link;
                         document.getElementById('resultCard').style.display = 'block';

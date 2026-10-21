@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CLens • Thư viện</title>
+    <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238b5cf6'%3E%3Cpath d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5-5-5 5h3v4h4v-4h3z'/%3E%3C/svg%3E" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #09090b; --primary: #8b5cf6; --glass: rgba(9, 9, 11, 0.7); --border: rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; min-height: 100vh; overflow-x: hidden; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        img { -webkit-user-drag: none; pointer-events: none; }
+        .mesh-bg { position: fixed; inset: 0; z-index: -1; background-image: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 40%), radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 40%); }
+        header { position: sticky; top: 0; z-index: 50; background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 18px; text-decoration: none; color: #fff; letter-spacing: 0.5px;}
+        .brand svg { width: 22px; height: 22px; fill: url(#grad); }
+        .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; color: #34d399; font-weight: 500; }
+        .dot { width: 6px; height: 6px; background: #34d399; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        main { padding: 30px 5%; max-width: 1400px; margin: 0 auto; min-height: 80vh; }
+        .loader-box { text-align: center; padding: 100px 0; color: #a1a1aa; font-size: 14px; }
+        .spinner { width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto;}
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; } }
+        @media (min-width: 1024px) { .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; } }
+        .card { position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: #18181b; border: 1px solid var(--border); transition: 0.3s; display: block; animation: fadeUp 0.5s ease backwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .card:hover { transform: translateY(-4px); border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover img { transform: scale(1.05); }
+        .card-info { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent); padding: 20px 10px 10px 10px; opacity: 0; transition: 0.3s; }
+        .card:hover .card-info { opacity: 1; }
+        .id-tag { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: 500;}
+        .empty { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #a1a1aa; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--border); }
+    </style>
+</head>
+<body>
+    <div class="mesh-bg"></div>
+    <svg width="0" height="0"><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6" /><stop offset="100%" stop-color="#ec4899" /></linearGradient></svg>
+
+    <header>
+        <a href="index.html" class="brand">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5-5-5 5h3v4h4v-4h3z"/></svg>
+            CLens
+        </a>
+        <div class="live-badge"><div class="dot"></div> Live</div>
+    </header>
+
+    <main>
+        <div class="loader-box" id="loader"><div class="spinner"></div>Đang tải dữ liệu...</div>
+        <div class="grid" id="grid"></div>
+    </main>
+
+    <script src="Data.js"></script>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key)) e.preventDefault(); if(e.key==='F12') e.preventDefault(); });
+
+        const grid = document.getElementById('grid'), loader = document.getElementById('loader');
+        let currentDataStr = "";
+
+        const render = (data) => {
+            if(!data || data.length===0) { grid.innerHTML = `<div class="empty">Chưa có ảnh nào.</div>`; return; }
+            let html = '';
+            data.forEach((img, i) => {
+                html += `
+                    <a href="view?id=${img.id}" class="card" style="animation-delay: ${i*0.03}s">
+                        <img src="${img.thumb}" loading="lazy">
+                        <div class="card-info"><span class="id-tag">${img.id}</span></div>
+                    </a>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        const fetchGallery = (first) => {
+            CLensData.getGallery().then(res => {
+                if(first) loader.style.display = 'none';
+                if(res.status === 'success') {
+                    const str = JSON.stringify(res.data);
+                    if(str !== currentDataStr) { currentDataStr = str; render(res.data); }
+                }
+            }).catch(()=>{ if(first) { loader.style.display='none'; grid.innerHTML=`<div class="empty">Lỗi mạng!</div>`; }});
+        }
+
+        fetchGallery(true);
+        setInterval(() => fetchGallery(false), 5000);
+    </script>
+</body>
+</html>

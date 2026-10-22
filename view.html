@@ -11,14 +11,35 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); height: 100vh; height: 100dvh; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
         .viewer { position: relative; width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; }
-        #imgNode { width: 100%; height: 100%; object-fit: contain; opacity: 0; transform: scale(0.97); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); display: none; pointer-events: none; -webkit-user-drag: none; }
+        
+        #imgNode { 
+            max-width: 94%; /* Tạo khoảng hở so với màn hình để thấy viền */
+            max-height: 94vh; 
+            object-fit: contain; 
+            
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Viền mỏng tinh tế */
+            border-radius: 12px; /* Bo góc viền */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); /* Đổ bóng tạo chiều sâu */
+            background: rgba(255, 255, 255, 0.02); /* Phông nền mờ lót dưới ảnh */
+
+            opacity: 0; 
+            transform: scale(0.97); 
+            transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            display: none; 
+            pointer-events: none; 
+            -webkit-user-drag: none; 
+        }
+        
         #imgNode.show { opacity: 1; transform: scale(1); }
         .glass-shield { position: absolute; inset: 0; z-index: 10; background: transparent; -webkit-touch-callout: none; }
+        
         .brand-watermark { position: absolute; top: 20px; left: 20px; z-index: 20; display: flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, 0.35); font-weight: 600; font-size: 14px; letter-spacing: 0.5px; pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         .brand-watermark svg { width: 18px; height: 18px; fill: rgba(255, 255, 255, 0.35); filter: drop-shadow(0 2px 10px rgba(0,0,0,0.8)); }
+        
         .loader { position: absolute; color: #fff; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 5; }
         .spin { width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #8b5cf6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
         .error { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 12px 20px; border-radius: 12px; display: none; z-index: 5; font-weight: 500; }
     </style>
 </head>

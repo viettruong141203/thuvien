@@ -1,4 +1,3 @@
-// Data.js - API Wrapper
 const CLensData = {
     API_URL: 'https://script.google.com/macros/s/AKfycby7QlHVDoWr7aQJMzLrfMWaCukXkFisq3A1BdLhyqcbdnPq2JvsJ0xgmkXrCbYBAKMtRQ/exec',
 

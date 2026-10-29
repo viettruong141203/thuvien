@@ -1,7 +1,7 @@
 // Data.js - Bộ não xử lý dữ liệu của CLens
 
 const CLensData = {
-    // Đã gán link Apps script của bạn
+    // Link API đã chuẩn xác
     API_URL: 'https://script.google.com/macros/s/AKfycby7QlHVDoWr7aQJMzLrfMWaCukXkFisq3A1BdLhyqcbdnPq2JvsJ0xgmkXrCbYBAKMtRQ/exec',
 
     // Hàm Tải ảnh lên

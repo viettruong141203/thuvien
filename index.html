@@ -179,7 +179,7 @@
                         showToast('Lưu thành công!');
                         document.getElementById('resId').innerText = d.id;
                         const p = window.location.pathname.split('/'); p.pop();
-                        const link = window.location.origin + p.join('/') + "/view.html?id=" + d.id;
+                        const link = window.location.origin + p.join('/') + "/view?id=" + d.id;
                         document.getElementById('resLink').innerText = link;
                         document.getElementById('resLink').href = link;
                         document.getElementById('resultCard').style.display = 'block';

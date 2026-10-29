@@ -10,14 +10,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CLens">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon.png">
 
     <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='14.31' y1='8' x2='20.05' y2='17.94'/%3E%3Cline x1='9.69' y1='8' x2='21.17' y2='8'/%3E%3Cline x1='7.38' y1='12' x2='13.12' y2='2.06'/%3E%3Cline x1='9.69' y1='16' x2='3.95' y2='6.06'/%3E%3Cline x1='14.31' y1='16' x2='2.83' y2='16'/%3E%3Cline x1='16.62' y1='12' x2='10.88' y2='21.94'/%3E%3C/svg%3E" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000000; --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.2); --glass: rgba(18, 18, 20, 0.65); --border: rgba(255, 255, 255, 0.08); --text-main: #ffffff; --text-sub: #a1a1aa; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
         body { background: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
         img { -webkit-user-drag: none; pointer-events: none; }
 
@@ -41,11 +40,9 @@
         .bento-btn span { font-weight: 500; font-size: 13px; color: #e4e4e7; letter-spacing: 0.3px; }
         
         input[type="file"] { display: none; }
-
         .preview-box { width: 100%; border-radius: 22px; overflow: hidden; display: none; position: relative; background: #050505; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .preview-box img { width: 100%; max-height: 320px; object-fit: contain; display: block; filter: brightness(0.95); }
-        
-        .status-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
+        .status-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
         .spinner { width: 34px; height: 34px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -54,26 +51,22 @@
         .btn-cancel { background: transparent; color: var(--text-sub); border: 1px solid rgba(255,255,255,0.15); }
         .btn-submit { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); font-weight: 600; }
         .btn:hover { transform: translateY(-2px); }
-        .btn-cancel:hover { background: rgba(255,255,255,0.08); color: #fff; }
-
+        
         .result-card { display: none; width: 100%; margin-top: 24px; padding: 22px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border); animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); text-align: left; }
         .r-label { font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; display: block; font-weight: 600;}
         .r-value { font-size: 18px; font-weight: 500; color: #fff; margin-bottom: 20px; letter-spacing: 0.5px;}
         .copy-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 14px; border-radius: 14px; font-size: 13px; word-break: break-all; cursor: pointer; display: block; transition: 0.3s; text-decoration: none; line-height: 1.5; font-weight: 400;}
-        .copy-btn:hover { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #d8b4fe;}
-
+        
         .toast { position: fixed; bottom: 40px; left: 50%; transform: translate(-50%, 100px); background: rgba(30,30,30,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); padding: 14px 28px; border-radius: 100px; font-size: 14px; font-weight: 500; color: #fff; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
         .toast.show { transform: translate(-50%, 0); }
 
-        /* Bảng gợi ý Cài đặt App (PWA Prompt) */
-        .install-prompt { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.15); border-radius: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 200; box-shadow: 0 20px 50px rgba(0,0,0,0.9); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .install-prompt { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.15); border-radius: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 200; box-shadow: 0 20px 50px rgba(0,0,0,0.9); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .install-prompt.show { bottom: 40px; }
         .install-info { display: flex; align-items: center; gap: 12px; flex: 1; }
         .install-icon { width: 44px; height: 44px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);}
         .install-icon svg { width: 22px; height: 22px; color: var(--accent); }
         .install-text h4 { font-size: 14px; font-weight: 600; margin: 0 0 2px 0; color: #fff; }
         .install-text p { font-size: 12px; color: var(--text-sub); margin: 0; line-height: 1.4; }
-        .install-actions { display: flex; align-items: center; gap: 8px; }
         .btn-do-install { background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 12px; font-weight: 600; font-size: 13px; cursor: pointer; }
         .btn-close-install { background: transparent; border: none; color: #71717a; font-size: 20px; cursor: pointer; padding: 4px; }
     </style>
@@ -84,15 +77,7 @@
     <div class="widget-card">
         <div id="initView" style="width: 100%;">
             <div class="icon-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
-                    <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
-                    <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
-                    <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
-                    <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
-                    <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg>
             </div>
             <h1>CLens</h1>
             <p class="sub">Không gian lưu trữ độc bản</p>
@@ -219,7 +204,6 @@
 
         document.getElementById('resLink').onclick = (e) => { e.preventDefault(); navigator.clipboard.writeText(e.target.href).then(()=>showToast('Đã chép liên kết!')); }
 
-        // Logic PWA - App
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW fail'));
         }
@@ -249,9 +233,7 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installPrompt.classList.remove('show');
-                }
+                if (outcome === 'accepted') { installPrompt.classList.remove('show'); }
                 deferredPrompt = null;
             }
         });

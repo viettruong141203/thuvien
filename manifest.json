@@ -7,7 +7,7 @@
   "theme_color": "#000000",
   "orientation": "portrait-primary",
   "scope": ".",
-  "icons": [
+  "icons":  [
     {
       "src": "icon-192.png",
       "sizes": "192x192",

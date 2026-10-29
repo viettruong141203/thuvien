@@ -1,12 +1,12 @@
 {
   "name": "CLens Gallery",
   "short_name": "CLens",
-  "start_url": "./index.html",
+  "start_url": "/thuvien/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "scope": ".",
+  "scope": "/thuvien/",
   "icons": [
     {
       "src": "icon.png",

@@ -89,7 +89,7 @@
             let html = '';
             data.forEach((img, i) => {
                 html += `
-                    <a href="view.html?id=${img.id}" class="card" style="animation-delay: ${i*0.05}s">
+                    <a href="view?id=${img.id}" class="card" style="animation-delay: ${i*0.05}s">
                         <img src="${img.thumb}" loading="lazy">
                         <div class="card-info"><span class="id-tag">${img.id}</span></div>
                     </a>

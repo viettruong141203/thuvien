@@ -219,7 +219,7 @@
 
         document.getElementById('resLink').onclick = (e) => { e.preventDefault(); navigator.clipboard.writeText(e.target.href).then(()=>showToast('Đã chép liên kết!')); }
 
-        // PWA Install Logic
+        // Logic PWA - App
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW fail'));
         }

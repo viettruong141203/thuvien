@@ -5,62 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CLens • Upload</title>
     
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/thuvien/manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CLens">
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="/thuvien/icon.svg">
 
     <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='14.31' y1='8' x2='20.05' y2='17.94'/%3E%3Cline x1='9.69' y1='8' x2='21.17' y2='8'/%3E%3Cline x1='7.38' y1='12' x2='13.12' y2='2.06'/%3E%3Cline x1='9.69' y1='16' x2='3.95' y2='6.06'/%3E%3Cline x1='14.31' y1='16' x2='2.83' y2='16'/%3E%3Cline x1='16.62' y1='12' x2='10.88' y2='21.94'/%3E%3C/svg%3E" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000000; --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.2); --glass: rgba(18, 18, 20, 0.65); --border: rgba(255, 255, 255, 0.08); --text-main: #ffffff; --text-sub: #a1a1aa; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
         body { background: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
         img { -webkit-user-drag: none; pointer-events: none; }
-
         .ambient-glow { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 70vw; max-width: 600px; max-height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 65%); filter: blur(60px); z-index: -1; pointer-events: none; animation: pulse-glow 7s ease-in-out infinite alternate; }
         @keyframes pulse-glow { 0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
-
         .widget-card { background: var(--glass); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px); border: 1px solid var(--border); border-radius: 36px; padding: 45px 32px; width: 100%; max-width: 420px; box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 1; animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
         .icon-wrap { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; display: flex; justify-content: center; align-items: center; margin-bottom: 24px; box-shadow: 0 12px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); }
         .icon-wrap svg { width: 32px; height: 32px; color: var(--accent); }
-        
         h1 { font-size: 26px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.5px; }
         p.sub { color: var(--text-sub); font-size: 14px; margin-bottom: 36px; font-weight: 400; letter-spacing: 0.2px; }
-
         .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
         .bento-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 22px; padding: 26px 12px; display: flex; flex-direction: column; align-items: center; gap: 14px; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .bento-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.4); }
         .bento-btn svg { width: 28px; height: 28px; stroke: #fff; stroke-width: 1.2; fill: none; opacity: 0.8; transition: 0.4s; }
         .bento-btn:hover svg { opacity: 1; stroke: var(--accent); transform: scale(1.1); }
         .bento-btn span { font-weight: 500; font-size: 13px; color: #e4e4e7; letter-spacing: 0.3px; }
-        
         input[type="file"] { display: none; }
         .preview-box { width: 100%; border-radius: 22px; overflow: hidden; display: none; position: relative; background: #050505; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .preview-box img { width: 100%; max-height: 320px; object-fit: contain; display: block; filter: brightness(0.95); }
         .status-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
         .spinner { width: 34px; height: 34px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .actions { display: none; gap: 14px; width: 100%; margin-top: 28px; }
         .btn { flex: 1; padding: 15px; border-radius: 16px; font-weight: 500; font-size: 14px; border: none; cursor: pointer; transition: 0.3s; letter-spacing: 0.3px; }
         .btn-cancel { background: transparent; color: var(--text-sub); border: 1px solid rgba(255,255,255,0.15); }
         .btn-submit { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); font-weight: 600; }
         .btn:hover { transform: translateY(-2px); }
-        
         .result-card { display: none; width: 100%; margin-top: 24px; padding: 22px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border); animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); text-align: left; }
         .r-label { font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; display: block; font-weight: 600;}
         .r-value { font-size: 18px; font-weight: 500; color: #fff; margin-bottom: 20px; letter-spacing: 0.5px;}
         .copy-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 14px; border-radius: 14px; font-size: 13px; word-break: break-all; cursor: pointer; display: block; transition: 0.3s; text-decoration: none; line-height: 1.5; font-weight: 400;}
-        
         .toast { position: fixed; bottom: 40px; left: 50%; transform: translate(-50%, 100px); background: rgba(30,30,30,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); padding: 14px 28px; border-radius: 100px; font-size: 14px; font-weight: 500; color: #fff; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
         .toast.show { transform: translate(-50%, 0); }
-
         .install-prompt { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.15); border-radius: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 200; box-shadow: 0 20px 50px rgba(0,0,0,0.9); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .install-prompt.show { bottom: 40px; }
         .install-info { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -74,7 +63,6 @@
 </head>
 <body>
     <div class="ambient-glow"></div>
-
     <div class="widget-card">
         <div id="initView" style="width: 100%;">
             <div class="icon-wrap">
@@ -82,7 +70,6 @@
             </div>
             <h1>CLens</h1>
             <p class="sub">Không gian lưu trữ độc bản</p>
-
             <div class="bento-grid">
                 <div class="bento-btn" onclick="document.getElementById('fileCamera').click()">
                     <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
@@ -96,7 +83,6 @@
             <input type="file" id="fileCamera" accept="image/*" capture="environment">
             <input type="file" id="fileGallery" accept="image/*">
         </div>
-
         <div class="preview-box" id="previewBox">
             <img id="imagePreview" src="">
             <div class="status-overlay" id="statusOverlay">
@@ -104,12 +90,10 @@
                 <span style="font-size: 13px; font-weight: 500; color: #fff; letter-spacing: 0.5px;">Đang mã hóa...</span>
             </div>
         </div>
-
         <div class="actions" id="actionGrp">
             <button class="btn btn-cancel" id="btnCancel">Hủy</button>
             <button class="btn btn-submit" id="btnSubmit">Lưu trữ</button>
         </div>
-
         <div class="result-card" id="resultCard">
             <span class="r-label">Định danh an toàn</span>
             <div class="r-value" id="resId">...</div>
@@ -137,7 +121,7 @@
         </div>
     </div>
 
-    <script src="Data.js"></script>
+    <script src="./Data.js"></script>
 
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -205,9 +189,6 @@
 
         document.getElementById('resLink').onclick = (e) => { e.preventDefault(); navigator.clipboard.writeText(e.target.href).then(()=>showToast('Đã chép liên kết!')); }
 
-        // ==========================================
-        // CẬP NHẬT: Đường dẫn SW trỏ thẳng vào /thuvien/
-        // ==========================================
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/thuvien/sw.js', { scope: '/thuvien/' })
                 .catch(err => console.log('SW fail'));

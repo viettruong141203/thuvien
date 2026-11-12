@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hệ Thống Lưu Trữ Media</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #a855f7; /* Tông màu tím CLens */
+            --primary-hover: #9333ea;
+            --bg: #000000;
+            --card-bg: #09090b;
+            --text: #f8fafc;
+            --text-muted: #a1a1aa;
+            --border: #27272a;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-text: #4ade80;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-text: #f87171;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            background: #000000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #bGet {
+            background-color: #10b981;
+        }
+        #bGet:hover:not(:disabled) {
+            background-color: #059669;
+        }
+
+        /* Vùng Loading khớp với ID "load" trong JS */
+        #load {
+            text-align: center;
+            padding: 16px;
+            margin-bottom: 20px;
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px dashed var(--primary);
+        }
+
+        /* Vùng Kết quả khớp với ID "res" trong JS */
+        #res {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        /* Class định dạng mầu sắc từ JS */
+        #res.ok {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        #res.err {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        #res a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        #res a:hover { text-decoration: underline; }
+        
+        #res hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 15px 0;
+        }
+        
+        #res h4 { margin: 10px 0 5px 0; color: #fff; }
+        #res ul { padding-left: 20px; margin-top: 5px; }
+        #res li { margin-bottom: 5px; color: var(--text-muted); }
+        
+        /* Chỉnh lại Iframe và Img do JS của bạn tự sinh ra */
+        #res iframe, #res img {
+            display: block;
+            margin-top: 15px !important;
+            background: #000;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Quản Lý Media</h2>
+
+        <!-- Khớp ID: fIn, bUp -->
+        <div class="card">
+            <h3>1. Tải Dữ Liệu Lên (Base64)</h3>
+            <input type="file" id="fIn" accept="image/*,video/*">
+            <button id="bUp" onclick="uploadFile()">Mã Hóa & Tải Lên</button>
+        </div>
+
+        <!-- Khớp ID: sId, bChk -->
+        <div class="card">
+            <h3>2. Tra Cứu File</h3>
+            <input type="text" id="sId" placeholder="Nhập ID file cần tra cứu...">
+            <button id="bChk" onclick="checkFile()">Kiểm Tra ID</button>
+        </div>
+
+        <!-- Khớp ID: bGet -->
+        <div class="card">
+            <h3>3. Tải Danh Sách Dữ Liệu</h3>
+            <button id="bGet" onclick="getAll()">Đồng Bộ Từ Google Sheet</button>
+        </div>
+
+        <!-- Vùng hiển thị trạng thái khớp với ID: load, res -->
+        <div id="load" style="display: none;"></div>
+        <div id="res" style="display: none;"></div>
+    </div>
+
+    <!-- Nhúng trực tiếp file JS của bạn -->
+    <script src="https://viettruong141203.github.io/hethong/Bot/image.js"></script>
+
+</body>
+</html>

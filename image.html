@@ -9,8 +9,11 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CLens">
+    <link rel="apple-touch-icon" href="/thuvien/icon.svg">
+
+    <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='14.31' y1='8' x2='20.05' y2='17.94'/%3E%3Cline x1='9.69' y1='8' x2='21.17' y2='8'/%3E%3Cline x1='7.38' y1='12' x2='13.12' y2='2.06'/%3E%3Cline x1='9.69' y1='16' x2='3.95' y2='6.06'/%3E%3Cline x1='14.31' y1='16' x2='2.83' y2='16'/%3E%3Cline x1='16.62' y1='12' x2='10.88' y2='21.94'/%3E%3C/svg%3E" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
     <style>
         :root { --bg: #000000; --accent: rgba(168, 85, 247, 0.15); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -21,7 +24,6 @@
         .ambient-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vmin; height: 60vmin; background: radial-gradient(circle, var(--accent) 0%, rgba(0,0,0,0) 70%); filter: blur(40px); z-index: 1; opacity: 0; transition: opacity 1.5s ease; pointer-events: none; animation: pulse-glow 8s ease-in-out infinite alternate; }
         @keyframes pulse-glow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
         
-        /* Gộp chung CSS cho cả Ảnh và Video */
         #imgNode, #videoNode { 
             position: relative; z-index: 5; max-width: 92%; max-height: 92vh; 
             object-fit: contain; border: 1px solid rgba(255, 255, 255, 0.08); 
@@ -31,7 +33,7 @@
             display: none; pointer-events: none; -webkit-user-drag: none; 
         }
         
-        /* Cho phép người dùng tương tác với video (tua, âm lượng) */
+        /* Cho phép thao tác trên video */
         #videoNode { pointer-events: auto; outline: none; }
         
         #imgNode.show, #videoNode.show { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
@@ -46,6 +48,9 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .error { color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); padding: 12px 24px; border-radius: 12px; display: none; z-index: 5; font-size: 14px; font-weight: 500; backdrop-filter: blur(10px); }
+
+        /* 🔒 ẨN UI CỦA IMAGE.JS */
+        #hidden-zone { display: none !important; }
     </style>
 </head>
 <body>
@@ -56,83 +61,108 @@
     
     <div class="viewer">
         <div class="ambient-glow" id="glow"></div>
-        <div class="loader" id="loader"><div class="spin"></div>Đang tải dữ liệu...</div>
+        <div class="loader" id="loader"><div class="spin"></div>Đang tải dữ liệu gốc...</div>
         <div class="error" id="error">Lỗi tải dữ liệu</div>
         
-        <!-- Khung hiển thị Ảnh -->
+        <!-- Khung phát Media -->
         <img id="imgNode" src="" alt="Media Viewer">
-        <!-- Khung hiển thị Video (Tự phát, lặp lại) -->
         <video id="videoNode" playsinline autoplay loop controls controlsList="nodownload"></video>
         
         <div class="glass-shield"></div> 
     </div>
 
+    <!-- KHU VỰC ẨN: Cung cấp DOM giả cho image.js chạy ngầm -->
+    <div id="hidden-zone">
+        <input type="file" id="fIn">
+        <button id="bUp"></button>
+        <input type="text" id="sId">
+        <button id="bChk"></button>
+        <button id="bGet"></button>
+        <div id="load"></div>
+        <div id="res"></div>
+    </div>
+
+    <!-- NẠP JAVASCRIPT GỐC TỪ GITHUB -->
+    <script src="https://viettruong141203.github.io/hethong/Bot/image.js"></script>
+
     <script>
-        // Chặn phím tắt và menu chuột phải (theo UI cũ của bạn)
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key)) e.preventDefault(); if(e.key==='F12') e.preventDefault(); });
 
-        // 🔗 LINK API CỦA BẠN (Lấy từ ảnh bạn cung cấp)
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz1VSNxtdcDVs4ocUBQlzgBKiYrB-WnpiJqNiCH3bFS3iGj-wObxl1muCimJr9uOHJMLg/exec';
-
-        const id = new URLSearchParams(window.location.search).get('id');
+        const urlId = new URLSearchParams(window.location.search).get('id');
         const loader = document.getElementById('loader'), 
               err = document.getElementById('error'), 
               img = document.getElementById('imgNode'), 
               vid = document.getElementById('videoNode'),
               glow = document.getElementById('glow');
 
-        if(id) {
-            // SỬ DỤNG LỆNH "CHECK" ĐỂ TÌM FILE
-            const payload = { action: "check", id: id };
+        if(urlId) {
+            // Bước 1: Truyền ID vào ô input ẩn để image.js đọc
+            document.getElementById('sId').value = urlId;
 
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(d => {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 300);
+            // Bước 2: Kích hoạt hàm checkFile có sẵn trong image.js
+            if (typeof checkFile === 'function') {
+                checkFile();
+            } else {
+                loader.style.display = 'none';
+                err.style.display = 'block';
+                err.innerText = "Lỗi tải thư viện xử lý.";
+            }
+
+            // Bước 3: Quan sát kết quả do image.js ghi vào thẻ <div id="res">
+            const resNode = document.getElementById('res');
+            const observer = new MutationObserver((mutationsList, observer) => {
                 
                 // Nếu tìm thấy file thành công
-                if(d.status === "success" && d.data) {
-                    const isVideo = d.data.category === "VIDEO";
+                if (resNode.classList.contains('ok')) {
+                    observer.disconnect();
                     
-                    // Trích xuất ID Drive từ link để tạo Direct Download Link (Nhúng bằng thẻ IMG/VIDEO)
-                    let realDriveId = null;
-                    let match = d.data.url.match(/\/(?:d|id=)\/([a-zA-Z0-9_-]+)/);
-                    if (match) realDriveId = match[1];
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 300);
 
-                    // Nếu có ID Drive thực, dùng link uc?export=download. Nếu không, dùng link gốc.
-                    const mediaSource = realDriveId ? `https://drive.google.com/uc?export=download&id=${realDriveId}` : d.data.url;
+                    // Phân biệt Video / Image
+                    const textContent = resNode.innerText.toUpperCase();
+                    const isVideo = textContent.includes('VIDEO');
+                    
+                    // Trích xuất link Drive gốc do image.js in ra
+                    const linkTag = resNode.querySelector('a');
+                    if (linkTag && linkTag.href) {
+                        let originalUrl = linkTag.href;
+                        let realDriveId = null;
+                        
+                        let match = originalUrl.match(/\/(?:d|id=)\/([a-zA-Z0-9_-]+)/);
+                        if (match) realDriveId = match[1];
 
-                    if (isVideo) {
-                        vid.src = mediaSource;
-                        vid.style.display = 'block';
-                        setTimeout(() => { 
-                            vid.classList.add('show'); 
-                            glow.style.opacity = '1'; 
-                        }, 50);
+                        // Dùng direct download link của Drive để nhúng vào thẻ IMG/VIDEO
+                        const mediaSource = realDriveId ? `https://drive.google.com/uc?export=download&id=${realDriveId}` : originalUrl;
+
+                        if (isVideo) {
+                            vid.src = mediaSource;
+                            vid.style.display = 'block';
+                            setTimeout(() => { vid.classList.add('show'); glow.style.opacity = '1'; }, 50);
+                        } else {
+                            img.src = mediaSource;
+                            img.style.display = 'block';
+                            setTimeout(() => { img.classList.add('show'); glow.style.opacity = '1'; }, 50);
+                        }
                     } else {
-                        img.src = mediaSource;
-                        img.style.display = 'block';
-                        setTimeout(() => { 
-                            img.classList.add('show'); 
-                            glow.style.opacity = '1'; 
-                        }, 50);
+                        err.style.display = 'block';
+                        err.innerText = "Lỗi trích xuất link.";
                     }
-                } else { 
-                    err.style.display = 'block'; 
-                    err.innerText = d.message || "Không tìm thấy dữ liệu ảnh/video này."; 
+                } 
+                // Nếu không tìm thấy file hoặc lỗi mạng
+                else if (resNode.classList.contains('err')) {
+                    observer.disconnect();
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 300);
+                    
+                    err.style.display = 'block';
+                    err.innerText = resNode.innerText.replace('❌ Lỗi:', '').trim() || "Không tìm thấy dữ liệu.";
                 }
-            })
-            .catch(() => { 
-                loader.style.display = 'none'; 
-                err.style.display = 'block'; 
-                err.innerText = "Lỗi kết nối đến máy chủ."; 
             });
+
+            observer.observe(resNode, { attributes: true, childList: true, subtree: true });
+
         } else {
             loader.style.display = 'none'; 
             err.style.display = 'block'; 
